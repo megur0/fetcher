@@ -1,39 +1,57 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+* このパッケージはpub.devに非公開のパッケージとなる。
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages).
+## このパッケージの目的
+* データの取得処理とデータ・エラーの情報を管理するクラス。
+* パッケージを活用することで、これらの責務を画面から分離する。
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages).
--->
+![](./doc/svg/structure.drawio.svg)
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+## データの種類
+* 前提としてデータや取得・表示形式を以下のように分類する。
+* データリソース  と 取得方式
+    | リソース | データ取得方式
+    |-|-|
+    | RDB    | 非ストリーム |  
+    | Firestore  | 非ストリーム・ストリーム |
+      
+* データ表示形式
+    | 種類 | 説明 |
+    |------|------|
+    | 固定 | 固定数のデータを表示する形式 |
+    | 増加 | 無限スクロール等、追加でデータを取得して表示数が増加していく形式 |
 
-## Features
+## フェッチャーの種類
+| クラス名 | データ取得方式 | データ表示形式 | API | 
+|------|------|------|------|
+| Fetcher(F) | 非ストリーム | 固定 |データ、エラー<br/>リトライ関数 | 
+| InfiniteFetcher(IF) | 非ストリーム |  増加 | データリスト、エラー<br/>新規取得関数、追加取得関数、リトライ関数(初期取得、追加取得)<br/>次データ存在有無 | 
+| StreamFetcher(SF) | ストリーム| 固定 | データ、エラー<br/>リトライ関数<br/>キャンセル| 
+| InfiniteFirestoreFetcherSimple(IFFS) | ストリーム|  増加 | データリスト、エラー<br/>追加取得関数、リトライ関数(初期取得、追加取得)<br/>次データ存在有無<br/>キャンセル  | 
+| InfiniteFirestoreFetcherHybrid(IFFH) | ハイブリッド<br/> - 新規/更新: ストリーム<br/> - 追加取得: 非ストリーム |  増加 | データリスト、エラー<br/>追加取得関数、リトライ関数(初期取得、追加取得)<br/>次データ存在有無<br/>キャンセル  | 
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+* IFFSとIFFHについては[フェッチャー(Firestore)](./doc/firestore_fetcher.md)を参照
 
-## Getting started
+## 各取得処理の実現方法
+|  |初期取得 | 初期取得<br/>(リトライ) | 追加取得 | 追加取得<br/>(リトライ)| 新規取得 | 新規取得<br/>(リトライ) | データの更新<br/>※削除含む |
+|------|------|------|------|------|------|------|------|
+| Fetcher | データ取得処理を実行 |  データとエラーをクリア<br/>データ取得処理を再実行 | - |- | - | - |- |
+| InfiniteFetcher | データ取得処理を実行<br/>※オフセットと件数を指定 | データとエラーをクリア<br/>データ取得処理を再実行 | データ取得処理を実行<br/>※オフセットを変更<br/>リストの末尾に追加 | データ取得処理を再実行<br/>リストの末尾に追加 | 新規取得処理を実行<br/>※先頭データより新しい日時を指定<br/>リストの先頭に追加 | 新規取得処理を再実行 | - |
+| StreamFetcher | サブスクを生成 |  データとエラーをクリア<br/>サブスクを再生成 | - | - | - | - | サブスクで受信 |
+| IFFS | サブスクを生成<br/>※件数を指定 | データとエラーをクリア<br/>サブスクを再生成| サブスクを再生成<br/>※件数を変更| サブスクを再生成 | サブスクで受信<br/>※全入れ替え| - | サブスクで受信<br/>※全入れ替え |
+| IFFH | データ取得処理を実行<br/>※オフセットと件数を指定<br/>サブスクを生成(新規・更新用)<br/>※現在日時を指定 | データとエラーをクリア<br/>データ取得処理を再実行<br/>サブスクを再生成| データ取得処理を実行<br/>※オフセットを変更<br/>リストの末尾に追加 | データ取得処理を再実行<br/>リストの末尾に追加 |サブスクで受信<br/>追加してソート<br>※カスタマイズ可能| - | サブスクで受信<br/>入れ替えてソート<br>※カスタマイズ可能 |
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+* 件数の指定時には、実際に必要な件数+1 を指定する。これは冗長に取得した1件が存在するかどうかによって次データ存在有無の判定を行うため。
+
+## データとエラーのライフサイクル
+|  |データ(更新)|データ(クリア)|エラー(更新)|エラー(クリア)|
+|-----------|-----------|-----------|-----------|-----------|
+| 非ストリーム | データ取得時| 初期取得(リトライ)時 | データ取得時|  リトライ時 |
+| ストリーム| データ受信時 | 初期取得(リトライ)時 | エラー受信時 | データ受信時<br/>リトライ時 |
+* クラス外からデータの書き換えはできない。
+    * 表示項目を制御したい場合は画面側で個別に状態を用意する必要がある。  
+* 追加取得・新規取得のリトライはデータリストがクリアされない、かつ既存のリストへ追加される。したがって重複して呼び出すとデータも重複してしまうので注意。
+* ストリームはリトライ時に加えて、データ受信時もエラーをクリアしている。
+    * これはストリームの性質上リトライ処理を経由せずに連続で受信（エラーを受信 -> 正常データを受信 ）した場合に直前のエラーをクリアするためのものである。
 
 ## Usage
-
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
-
-```dart
-const like = 'sample';
-```
-
-## Additional information
-
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+* TODO: 
