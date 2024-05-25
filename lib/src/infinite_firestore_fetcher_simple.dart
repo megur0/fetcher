@@ -58,7 +58,6 @@ class InfiniteStreamFetcherSimple<T> {
     _resetData();
     _resetError();
     _resetSubscription();
-    _notify();
   }
 
   void retryMore() {
@@ -68,7 +67,6 @@ class InfiniteStreamFetcherSimple<T> {
   void _resetWithoutData() {
     _resetError();
     _resetSubscription();
-    _notify();
   }
 
   void _resetSubscription() {

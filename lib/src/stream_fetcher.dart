@@ -42,7 +42,6 @@ class StreamFetcher<T> {
     _resetError();
     _resetData();
     _resetSubscription();
-    _notify();
   }
 
   void _resetSubscription() {
