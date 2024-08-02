@@ -9,14 +9,14 @@ abstract interface class FirestoreInfinitableData<S extends Comparable> {
 }
 
 class InfiniteFirestoreFetcherHybrid<T extends FirestoreInfinitableData<S>,
-    S extends Comparable> {
+    S extends Comparable, E> {
   InfiniteFirestoreFetcherHybrid(
     this._getMoreData,
     this._limit,
     this.getChangedDataSubscription,
     this._notify, {
     bool sortDescending = true,
-    Object? Function(Object? error, StackTrace? stackTrace)? errorHandler,
+    E? Function(E? error, StackTrace? stackTrace)? errorHandler,
     List<T> Function(
             List<T> currentDataList,
             List<({T data, DocumentChangeType type})> changedDataList,
@@ -35,17 +35,17 @@ class InfiniteFirestoreFetcherHybrid<T extends FirestoreInfinitableData<S>,
   List<T>? _dataList;
   List<T>? get dataList => _dataList;
 
-  Object? _errorOnMoreLoad;
-  Object? get errorOnMoreLoad => _errorOnMoreLoad;
-  Object? _errorOnLoadChangedData;
-  Object? get errorOnLoadChangedData => _errorOnLoadChangedData;
-  final Object? Function(Object? error, StackTrace? stackTrace)? _errorHandler;
+  E? _errorOnMoreLoad;
+  E? get errorOnMoreLoad => _errorOnMoreLoad;
+  E? _errorOnLoadChangedData;
+  E? get errorOnLoadChangedData => _errorOnLoadChangedData;
+  final E? Function(E? error, StackTrace? stackTrace)? _errorHandler;
 
   bool _hasMore = true;
   bool get hasMore => _hasMore;
 
-  final Future<({List<T>? data, Object? error})> Function(int limit, S? offset,
-          Object? Function(Object? error, StackTrace? stackTrace)? errorHandler)
+  final Future<({List<T>? data, E? error})> Function(int limit, S? offset,
+          E? Function(E? error, StackTrace? stackTrace)? errorHandler)
       _getMoreData;
 
   final void Function() _notify;
@@ -62,7 +62,7 @@ class InfiniteFirestoreFetcherHybrid<T extends FirestoreInfinitableData<S>,
   final StreamSubscription<List<({T data, DocumentChangeType type})>> Function(
           DateTime offset,
           Function(List<({T data, DocumentChangeType type})> l) onData,
-          Function(Object? error, StackTrace? stackTrace)? onError)
+          Function(E? error, StackTrace? stackTrace)? onError)
       getChangedDataSubscription;
 
   void _initialLoad() async {
@@ -96,8 +96,9 @@ class InfiniteFirestoreFetcherHybrid<T extends FirestoreInfinitableData<S>,
     ) {
       if (_errorHandler != null) {
         _errorOnLoadChangedData = _errorHandler(err, st);
+      } else {
+        _errorOnLoadChangedData = err;
       }
-      _errorOnLoadChangedData = err;
       _notify();
     });
   }

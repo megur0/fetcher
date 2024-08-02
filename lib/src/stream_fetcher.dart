@@ -1,8 +1,8 @@
 import 'dart:async';
 
-class StreamFetcher<T> {
+class StreamFetcher<T, E> {
   StreamFetcher(this._getSubscription, this._notify,
-      {Object? Function(Object? error, StackTrace? stackTrace)? errorHandler})
+      {E? Function(E? error, StackTrace? stackTrace)? errorHandler})
       : _errorHandler = errorHandler {
     setSubScription();
   }
@@ -10,16 +10,16 @@ class StreamFetcher<T> {
   T? _data;
   T? get data => _data;
 
-  Object? _error;
-  Object? get error => _error;
-  final Object? Function(Object? error, StackTrace? stackTrace)? _errorHandler;
+  E? _error;
+  E? get error => _error;
+  final E? Function(E? error, StackTrace? stackTrace)? _errorHandler;
 
   final void Function() _notify;
 
   StreamSubscription<T?>? _subscription;
 
   final StreamSubscription<T?> Function(Function(T? l) onData,
-      Function(Object? error, StackTrace? stackTrace) onError) _getSubscription;
+      Function(E? error, StackTrace? stackTrace) onError) _getSubscription;
 
   void setSubScription() {
     _subscription = _getSubscription(
@@ -30,9 +30,10 @@ class StreamFetcher<T> {
       },
       (err, st) {
         if (_errorHandler != null) {
-          err = _errorHandler(err, st);
+          _error = _errorHandler(err, st);
+        } else {
+          _error = err;
         }
-        _error = err;
         _notify();
       },
     );

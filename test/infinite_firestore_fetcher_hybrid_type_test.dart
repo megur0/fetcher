@@ -41,27 +41,26 @@ void main() {
     test("正常系：作成日時（降順）", () async {
       await withClock(Clock.fixed(_currentTime), () async {
         final fetcher = InfiniteFirestoreFetcherHybrid(
-            (limit, offset, errorHandler) async {
-              return (
-                data: initialDataForSortedCreatedAtOnDescend,
-                error: null
-              );
-            },
-            initialDataForSortedCreatedAtOnDescend.length,
-            (updatedAtOffset,
-                Function(
-                        List<
-                            ({
-                              _DataSortedCreatedAt data,
-                              DocumentChangeType type
-                            })>)
-                    onData,
-                onError) {
-              return Stream.fromIterable([
-                <({_DataSortedCreatedAt data, DocumentChangeType type})>[]
-              ]).listen(onData, onError: onError);
-            },
-            () {});
+          (limit, offset, errorHandler) async {
+            return (data: initialDataForSortedCreatedAtOnDescend, error: null);
+          },
+          initialDataForSortedCreatedAtOnDescend.length,
+          (updatedAtOffset,
+              Function(
+                      List<
+                          ({
+                            _DataSortedCreatedAt data,
+                            DocumentChangeType type
+                          })>)
+                  onData,
+              onError) {
+            return Stream.fromIterable([
+              <({_DataSortedCreatedAt data, DocumentChangeType type})>[]
+            ]).listen(onData, onError: onError);
+          },
+          () {},
+          errorHandler: (error, stackTrace) => error,
+        );
 
         await Future(() {});
         expect(fetcher.dataList!.last._createdAt,
@@ -109,7 +108,8 @@ void main() {
               return Stream.fromIterable(updateDataStreamList)
                   .listen(onData, onError: onError);
             },
-            () {});
+            () {},
+            errorHandler: (error, stackTrace) => error);
 
         await Future(() {});
         expect(fetcher.dataList!.length,
@@ -138,24 +138,27 @@ void main() {
       ];
       await withClock(Clock.fixed(_currentTime), () async {
         final fetcher = InfiniteFirestoreFetcherHybrid(
-          (limit, offset, errorHandler) async {
-            return (data: initialDataForSortedCreatedAtOnDescend, error: null);
-          },
-          initialDataForSortedCreatedAtOnDescend.length,
-          (updatedAtOffset,
-              Function(
-                      List<
-                          ({
-                            _DataSortedCreatedAt data,
-                            DocumentChangeType type
-                          })>)
-                  onData,
-              onError) {
-            return Stream.fromIterable(updateDataStreamList)
-                .listen(onData, onError: onError);
-          },
-          () {},
-        );
+            (limit, offset, errorHandler) async {
+              return (
+                data: initialDataForSortedCreatedAtOnDescend,
+                error: null
+              );
+            },
+            initialDataForSortedCreatedAtOnDescend.length,
+            (updatedAtOffset,
+                Function(
+                        List<
+                            ({
+                              _DataSortedCreatedAt data,
+                              DocumentChangeType type
+                            })>)
+                    onData,
+                onError) {
+              return Stream.fromIterable(updateDataStreamList)
+                  .listen(onData, onError: onError);
+            },
+            () {},
+            errorHandler: (error, stackTrace) => error);
 
         await Future(() {});
         expect(fetcher.dataList!.length,
@@ -201,6 +204,7 @@ void main() {
                   .listen(onData, onError: onError);
             },
             () {},
+            errorHandler: (error, stackTrace) => error,
             changedDataHandler: _DataSortedCreatedAt.changedDataHandeler);
 
         await Future(() {});
@@ -246,24 +250,24 @@ void main() {
       ];
       await withClock(Clock.fixed(_currentTime), () async {
         final fetcher = InfiniteFirestoreFetcherHybrid(
-          (limit, offset, errorHandler) async {
-            return (data: <_DataSortedCreatedAt>[], error: null);
-          },
-          initialDataForSortedCreatedAtOnDescend.length,
-          (updatedAtOffset,
-              Function(
-                      List<
-                          ({
-                            _DataSortedCreatedAt data,
-                            DocumentChangeType type
-                          })>)
-                  onData,
-              onError) {
-            return Stream.fromIterable(updateDataStreamList)
-                .listen(onData, onError: onError);
-          },
-          () {},
-        );
+            (limit, offset, errorHandler) async {
+              return (data: <_DataSortedCreatedAt>[], error: null);
+            },
+            initialDataForSortedCreatedAtOnDescend.length,
+            (updatedAtOffset,
+                Function(
+                        List<
+                            ({
+                              _DataSortedCreatedAt data,
+                              DocumentChangeType type
+                            })>)
+                    onData,
+                onError) {
+              return Stream.fromIterable(updateDataStreamList)
+                  .listen(onData, onError: onError);
+            },
+            () {},
+            errorHandler: (error, stackTrace) => error);
 
         await Future(() {});
 
@@ -302,6 +306,7 @@ void main() {
                   .listen(onData, onError: onError);
             },
             () {},
+            errorHandler: (error, stackTrace) => error,
             sortDescending: false);
 
         await Future(() {});
@@ -346,7 +351,8 @@ void main() {
               return Stream.fromIterable(updateDataStreamList)
                   .listen(onData, onError: onError);
             },
-            () {});
+            () {},
+            errorHandler: (error, stackTrace) => error);
 
         await Future(() {});
         expect(fetcher.dataList!.length,

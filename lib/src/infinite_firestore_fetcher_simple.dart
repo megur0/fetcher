@@ -1,6 +1,6 @@
 import 'dart:async';
 
-class InfiniteStreamFetcherSimple<T> {
+class InfiniteStreamFetcherSimple<T, E> {
   InfiniteStreamFetcherSimple(
     this._limitOffset,
     this.getSubscription,
@@ -15,8 +15,8 @@ class InfiniteStreamFetcherSimple<T> {
   List<T>? _dataList;
   List<T>? get dataList => _dataList;
 
-  Object? _error;
-  Object? get error => _error;
+  E? _error;
+  E? get error => _error;
 
   bool _hasMore = true;
   bool get hasMore => _hasMore;
@@ -26,7 +26,7 @@ class InfiniteStreamFetcherSimple<T> {
   late StreamSubscription<List<T>> _subscription;
   final StreamSubscription<List<T>> Function(
       void Function(List<T>) onListen,
-      void Function(Object? error, StackTrace st) onError,
+      void Function(E? error, StackTrace st) onError,
       int limit) getSubscription;
 
   void _setSubScription() {

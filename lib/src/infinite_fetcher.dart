@@ -4,7 +4,7 @@ abstract interface class Sortable {
   DateTime get sortKey;
 }
 
-class InfiniteFetcher<T extends Sortable> {
+class InfiniteFetcher<T extends Sortable, E> {
   InfiniteFetcher(
     this._limit,
     this._fetchOld,
@@ -19,16 +19,16 @@ class InfiniteFetcher<T extends Sortable> {
 
   List<T>? _dataList;
   List<T>? get dataList => _dataList;
-  Object? _error;
-  Object? get error => _error;
+  E? _error;
+  E? get error => _error;
 
   bool hasMore = true;
 
   bool get _hasData => _dataList != null && _dataList!.isNotEmpty;
 
-  final Future<({List<T> data, Object? error})> Function(int limit, int offset)
+  final Future<({List<T> data, E? error})> Function(int limit, int offset)
       _fetchOld;
-  final Future<({List<T> data, Object? error})> Function(DateTime after)
+  final Future<({List<T> data, E? error})> Function(DateTime after)
       _fetchNew;
 
   final void Function() _notify;

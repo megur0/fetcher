@@ -1,6 +1,6 @@
 import 'dart:async';
 
-class Fetcher<T> {
+class Fetcher<T, E> {
   Fetcher(
     this._fetch,
     this._notify,
@@ -10,10 +10,10 @@ class Fetcher<T> {
 
   T? _data;
   T? get data => _data;
-  Object? _error;
-  Object? get error => _error;
+  E? _error;
+  E? get error => _error;
 
-  final Future<({T data, Object? error})> Function() _fetch;
+  final Future<({T data, E? error})> Function() _fetch;
 
   final void Function() _notify;
 
