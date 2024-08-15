@@ -5,12 +5,16 @@ abstract interface class Sortable {
 }
 
 class InfiniteFetcher<T extends Sortable, E> {
-  InfiniteFetcher(
-    this._limit,
-    this._fetchOld,
-    this._fetchNew,
-    this._notify,
-  ) {
+  InfiniteFetcher({
+    required int limit,
+    required Future<({List<T> data, E? error})> Function(int limit, int offset)
+        fetchOld,
+    required void Function() notify,
+    Future<({List<T> data, E? error})> Function(DateTime after)? fetchNew,
+  })  : _limit = limit,
+        _fetchOld = fetchOld,
+        _fetchNew = fetchNew,
+        _notify = notify {
     _initialFetch();
   }
 
@@ -28,8 +32,7 @@ class InfiniteFetcher<T extends Sortable, E> {
 
   final Future<({List<T> data, E? error})> Function(int limit, int offset)
       _fetchOld;
-  final Future<({List<T> data, E? error})> Function(DateTime after)
-      _fetchNew;
+  final Future<({List<T> data, E? error})> Function(DateTime after)? _fetchNew;
 
   final void Function() _notify;
 
@@ -68,8 +71,9 @@ class InfiniteFetcher<T extends Sortable, E> {
 
   Future<void> fetchNew() async {
     assert(_dataList != null);
+    assert(_fetchNew != null);
 
-    final res = await _fetchNew(_hasData
+    final res = await _fetchNew!(_hasData
         ? _dataList!.first.sortKey
         : DateTime.parse(
             "1900-01-01T00:00:00.001000+09:00") /* 現在の日時からずっと過去の日時 */);
