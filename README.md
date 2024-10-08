@@ -1,4 +1,4 @@
-* このパッケージはpub.devに非公開のパッケージとなる。
+* このパッケージはプライベートパッケージとなる
 
 ## このパッケージの目的
 * データの取得処理とデータ・エラーの情報を管理するクラス。
@@ -29,7 +29,7 @@
 | InfiniteFirestoreFetcherSimple(IFFS) | ストリーム|  増加 | データリスト、エラー<br/>追加取得関数、リトライ関数(初期取得、追加取得)<br/>次データ存在有無<br/>キャンセル  | 
 | InfiniteFirestoreFetcherHybrid(IFFH) | ハイブリッド<br/> - 新規/更新: ストリーム<br/> - 追加取得: 非ストリーム |  増加 | データリスト、エラー<br/>追加取得関数、リトライ関数(初期取得、追加取得)<br/>次データ存在有無<br/>キャンセル  | 
 
-* IFFSとIFFHについては[フェッチャー(Firestore)](./doc/firestore_fetcher.md)を参照
+* IFFSとIFFHについては[フェッチャー(Firestore)](https://github.com/megur0/firestore_fetcher)を参照
 
 ## 各取得処理の実現方法
 |  |初期取得 | 初期取得<br/>(リトライ) | 追加取得 | 追加取得<br/>(リトライ)| 新規取得 | 新規取得<br/>(リトライ) | データの更新<br/>※削除含む |

@@ -5,3 +5,5 @@
 ## 0.2.0
 * fetcherとinfinite_fetcherの引数を名前付き引数に変更
 * infinite_fetcherの引数の_fetchNewをnullableに変更
+## 0.3.0
+* firestoreのfetcherを別パッケージとして分離
