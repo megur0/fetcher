@@ -7,3 +7,5 @@
 * infinite_fetcherの引数の_fetchNewをnullableに変更
 ## 0.3.0
 * firestoreのfetcherを別パッケージとして分離
+## 0.0.4
+* リトライ処理でFutureを返すように修正

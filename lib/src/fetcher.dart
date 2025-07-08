@@ -27,10 +27,10 @@ class Fetcher<T, E> {
     _notify();
   }
 
-  void retry() {
+  Future<void> retry() async {
     _resetData();
     _resetError();
-    _execFetch();
+    await _execFetch();
   }
 
   void _resetData() {

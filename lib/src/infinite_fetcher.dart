@@ -63,10 +63,10 @@ class InfiniteFetcher<T extends Sortable, E> {
     fetchOld(false);
   }
 
-  void retry() {
+  Future<void> retry() async {
     _resetData();
     _resetError();
-    _initialFetch();
+    await _initialFetch();
   }
 
   Future<void> fetchNew() async {
@@ -89,8 +89,8 @@ class InfiniteFetcher<T extends Sortable, E> {
     _notify();
   }
 
-  void _initialFetch() {
-    fetchOld(false);
+  Future<void> _initialFetch() async {
+    await fetchOld(false);
   }
 
   void _resetData() {
